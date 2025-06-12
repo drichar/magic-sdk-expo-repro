@@ -1,17 +1,18 @@
-# Magic SDK + Expo + React Native 0.79 Compatibility Issue - Minimal Reproduction
+# Magic SDK + Expo + React Native 0.79 Android Compatibility Issue - Minimal Reproduction
 
 ## Bug Description
 
-Magic SDK native bridge calls hang indefinitely when using **Expo SDK 53** (React Native 0.79.3) with New Architecture enabled. The same code works perfectly with **Expo SDK 52** (React Native 0.76.x).
+Magic SDK native bridge calls hang indefinitely on **Android** when using **Expo SDK 53** (React Native 0.79.3) with New Architecture enabled. The same code works perfectly with **Expo SDK 52** (React Native 0.76.x).
 
-**This issue affects both iOS and Android platforms using Expo managed workflow.**
+**This issue specifically affects Android platforms using Expo managed workflow. iOS works correctly when the `magic.Relayer` component is properly configured.**
 
 ## Environment
 
 - **Expo SDK**: 53.0.11
 - **React Native**: 0.79.3
 - **New Architecture**: Enabled
-- **Platforms**: iOS and Android
+- **Affected Platform**: Android
+- **Working Platform**: iOS (with proper magic.Relayer setup)
 - **Magic SDK Version**: @magic-sdk/react-native-expo@30.1.0
 
 ## Setup Instructions
@@ -58,7 +59,8 @@ npx expo run:ios      # For iOS
    ✅ Magic SDK initialized
    🔍 Calling magic.user.isLoggedIn()...
    ```
-4. **The call will hang indefinitely on both platforms** - no further logs will appear
+4. **On Android: The call will hang indefinitely** - no further logs will appear
+5. **On iOS: The call completes successfully** - you'll see completion logs and success alert
 
 ## Expected Behavior
 
@@ -68,21 +70,32 @@ npx expo run:ios      # For iOS
 
 ## Actual Behavior
 
+### Android
+
 - `magic.user.isLoggedIn()` hangs indefinitely
 - No error thrown, no timeout, no response
 - App remains functional but Magic SDK calls never resolve
 
+### iOS
+
+- ✅ Works correctly when `magic.Relayer` component is properly configured
+- `magic.user.isLoggedIn()` completes successfully
+- All Magic SDK functionality works as expected
+
 ## Additional Context
 
-- **Working Configuration**: Expo SDK 52 + React Native 0.76 + New Architecture ✅
-- **Broken Configuration**: Expo SDK 53 + React Native 0.79 + New Architecture ❌
-- **Cross-Platform Issue**: Affects both iOS and Android identically in Expo managed workflow
-- Other Magic SDK methods (`magic.user.getInfo()`, etc.) also hang
-- Issue appears to be with native bridge communication, not JavaScript layer
-- Magic SDK initializes successfully - only runtime calls hang
+- **Working Configuration**:
+  - Expo SDK 52 + React Native 0.76 + New Architecture (both iOS and Android) ✅
+  - Expo SDK 53 + React Native 0.79 + New Architecture + iOS ✅
+- **Broken Configuration**:
+  - Expo SDK 53 + React Native 0.79 + New Architecture + Android ❌
+- **Android-Specific Issue**: Only affects Android in Expo managed workflow
+- Other Magic SDK methods (`magic.user.getInfo()`, etc.) also hang on Android
+- Issue appears to be with native bridge communication on Android, not JavaScript layer
+- Magic SDK initializes successfully on both platforms - only Android runtime calls hang
 - **Possible Root Causes**:
-  - React Native 0.79 New Architecture compatibility issue with Magic SDK
-  - Expo's specific build/configuration of RN 0.79 affecting native modules
-  - Magic SDK's Expo wrapper (`@magic-sdk/react-native-expo`) compatibility issue
+  - React Native 0.79 New Architecture compatibility issue with Magic SDK on Android
+  - Expo's specific build/configuration of RN 0.79 affecting Android native modules
+  - Magic SDK's Expo wrapper (`@magic-sdk/react-native-expo`) Android-specific compatibility issue
 
-This reproduction demonstrates the exact cross-platform issue blocking production migration from Expo SDK 52 to 53.
+This reproduction demonstrates the exact Android-specific issue blocking production migration from Expo SDK 52 to 53.
