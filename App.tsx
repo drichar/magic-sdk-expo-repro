@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button, Alert } from 'react-native';
 import { Magic } from '@magic-sdk/react-native-expo';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const magic = new Magic(process.env.EXPO_PUBLIC_MAGIC_PUBLIC_KEY ?? '');
 
@@ -34,20 +35,24 @@ export default function App() {
 	};
 
 	return (
-		<View style={styles.container}>
-			<Text style={styles.title}>Magic SDK Test</Text>
-			<Text style={styles.subtitle}>Expo SDK 53 + RN 0.79 Compatibility</Text>
+		<SafeAreaProvider>
+			<magic.Relayer />
 
-			<Button
-				title={isLoading ? 'Testing...' : 'Test Magic SDK'}
-				onPress={testMagicSDK}
-				disabled={isLoading}
-			/>
+			<View style={styles.container}>
+				<Text style={styles.title}>Magic SDK Test</Text>
+				<Text style={styles.subtitle}>Expo SDK 53 + RN 0.79 Compatibility</Text>
 
-			<Text style={styles.instructions}>
-				Check console logs for detailed output
-			</Text>
-		</View>
+				<Button
+					title={isLoading ? 'Testing...' : 'Test Magic SDK'}
+					onPress={testMagicSDK}
+					disabled={isLoading}
+				/>
+
+				<Text style={styles.instructions}>
+					Check console logs for detailed output
+				</Text>
+			</View>
+		</SafeAreaProvider>
 	);
 }
 
